@@ -1,0 +1,72 @@
+📄 Introduction
+
+	With the rapid growth of computer networks and internet-based services, ensuring network security has become a major challenge.
+	Modern systems are continuously exposed to various cyber threats such as denial-of-service (DoS) attacks, unauthorized access, and network probing.
+	These attacks can compromise sensitive data and disrupt critical services.
+	As a result, Intrusion Detection Systems (IDS) play an important role in protecting network infrastructure.
+
+	Traditional IDS mainly rely on signature-based or rule-based techniques.
+	These systems detect attacks by comparing network traffic with predefined patterns.
+	However, they are ineffective in identifying new or unknown attacks (zero-day attacks).
+	They also struggle to handle large volumes of complex and high-dimensional network data.
+	
+	To overcome these limitations, machine learning techniques are widely used in intrusion detection.
+	Machine learning models can learn patterns from historical data and detect anomalies.
+	However, advanced models like deep learning are often complex, resource-intensive, and difficult to interpret.
+	
+	This project proposes a Distance-Based Intrusion Detection System (DICS).
+	The system uses a simple and efficient machine learning approach based on similarity measurement.
+	Each attack type is represented using a centroid (average feature vector).
+	Incoming network data is compared with these profiles using distance metrics such as Euclidean distance.
+	
+	The system identifies the closest matching attack and classifies the traffic as normal or malicious.
+	It also provides additional outputs like confidence score, similarity percentage, and risk level.
+	This improves interpretability and helps users understand the detection process.
+	
+	The proposed system is lightweight, fast, and suitable for near real-time applications.
+	It also includes a user-friendly web interface for monitoring and visualization.
+	Thus, the system offers an effective and explainable solution for modern intrusion detection.
+
+
+❕Problem Statement
+
+	With the rapid growth of networked systems and internet-based applications, cyber threats such as denial-of-service attacks, unauthorized access, and network 	probing have become increasingly frequent and sophisticated. 
+	Traditional security mechanisms like firewalls and signature-based intrusion detection systems are often inadequate, as they rely on predefined attack patterns 	and fail to detect new or evolving threats. 
+	Moreover, modern network environments generate large volumes of high-dimensional data, making real-time monitoring and analysis a challenging task.
+
+	The problem addressed in this project is the design and development of an efficient, interpretable, and real-time intrusion detection system that can 	accurately classify network traffic as normal or malicious. 
+	Specifically, the system uses a distance-based method to compare incoming network data with known attack profiles, enabling faster detection while maintaining 	simplicity and explainability. 
+	The challenge lies in handling high-dimensional data, ensuring accurate classification despite overlapping attack patterns, and managing imbalanced datasets 	while providing meaningful insights such as confidence levels and risk categories.
+
+🎯 Objectives of the Project
+
+	To design and develop an efficient Intrusion Detection System (IDS) using machine learning techniques.
+	To implement a distance-based classification approach for identifying network intrusions.
+	To accurately classify network traffic as normal or malicious based on similarity measures.
+	To build attack profiles (centroids) for different types of network attacks.
+	To ensure fast and near real-time detection of intrusions.
+	To improve interpretability by providing confidence scores, similarity, and risk levels.
+	To handle high-dimensional network data effectively using preprocessing techniques.
+	To develop a user-friendly web interface for monitoring and visualization.
+	To provide detailed insights and analytics through dashboards and graphs.
+	To create a system that is lightweight, scalable, and easy to extend.
+
+📄 Existing System
+
+	Traditional intrusion detection systems mainly rely on signature-based or rule-based techniques.
+	These systems detect attacks by comparing network traffic with predefined patterns or known attack signatures.
+	While they are effective in identifying known threats, they fail to detect new or unknown attacks (zero-day attacks).
+	They also struggle with high-dimensional data and require frequent updates to maintain accuracy.
+	Additionally, many advanced systems use complex models that are computationally expensive and difficult to interpret.
+	This makes them less suitable for real-time and scalable applications.
+
+🚀 Proposed System (DICS)
+
+	The proposed system is a Distance-Based Intrusion Detection System (DICS) using machine learning.
+	It uses a similarity-based approach, where each attack type is represented by a centroid (average feature vector).
+	Incoming network traffic is compared with these profiles using distance metrics to find the closest match.
+	The system can detect both known attacks and anomalies, improving detection capability.
+	It is lightweight, fast, and suitable for near real-time detection.
+	Additionally, it provides interpretable outputs such as confidence score, similarity percentage, and risk level.
+	A web-based interface is also implemented for monitoring, visualization, and analysis.
+

@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DICS - Detection Result</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1A365D;
+            --primary-dark: #0F1F3D;
+            --primary-light: #2D4A7C;
+            --accent: #D4A017;
+            --accent-light: #E6C362;
+            --accent-dark: #B8860B;
+            --gray-dark: #4A5568;
+            --gray: #718096;
+            --gray-light: #E2E8F0;
+            --bg-sky: #E6F3FF;  /* Light Sky Blue Background */
+            --card-bg: #FFFFFF;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #2C5282 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+            background: var(--bg-sky);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .bg-circle-1 {
+            position: absolute;
+            top: -200px;
+            right: -200px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(33, 150, 243, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .bg-circle-2 {
+            position: absolute;
+            bottom: -200px;
+            left: -200px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(33, 150, 243, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .container {
+            background: var(--card-bg);
+            max-width: 750px;
+            width: 100%;
+            padding: 25px 30px;
+            border-radius: 36px;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            position: relative;
+            z-index: 1;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--gradient-accent);
+            border-radius: 36px 36px 0 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 18px;
+            background: var(--bg-light);
+            color: var(--accent-dark);
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 30px;
+            margin-bottom: 15px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .badge i {
+            color: var(--accent);
+        }
+
+        .icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 12px;
+            background: {% if risk == 'LOW' %}#10B981{% elif risk == 'MEDIUM' %}#F59E0B{% elif risk == 'HIGH' %}#EF4444{% else %}#7F1D1D{% endif %};
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2);
+        }
+
+        .icon i {
+            font-size: 40px;
+            color: white;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .time {
+            color: var(--gray);
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-light);
+            padding: 6px 20px;
+            border-radius: 40px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .time i {
+            color: var(--accent);
+        }
+
+        /* Confidence Meter */
+        .confidence-meter {
+            background: var(--bg-light);
+            padding: 18px 20px;
+            border-radius: 28px;
+            margin: 20px 0;
+            border: 1px solid var(--gray-light);
+        }
+
+        .meter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .meter-header span:first-child {
+            color: var(--gray-dark);
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .meter-header span:first-child i {
+            color: var(--accent);
+        }
+
+        .meter-header span:last-child {
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background: var(--gray-light);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            width: {{ confidence }}%;
+            border-radius: 20px;
+        }
+
+        /* Info Cards */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .info-card {
+            background: var(--bg-light);
+            padding: 18px 12px;
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid var(--gray-light);
+        }
+
+        .info-card i {
+            font-size: 24px;
+            color: var(--accent);
+            margin-bottom: 8px;
+            background: white;
+            width: 48px;
+            height: 48px;
+            line-height: 48px;
+            border-radius: 16px;
+            display: inline-block;
+        }
+
+        .info-label {
+            color: var(--gray);
+            font-size: 11px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* ===== TOP MATCHING ATTACKS SECTION - BLUE & GOLD THEME ===== */
+        .matches-section {
+            background: linear-gradient(145deg, #FFFFFF, var(--bg-light));
+            padding: 20px;
+            border-radius: 28px;
+            margin: 20px 0;
+            border: 1px solid var(--gray-light);
+            box-shadow: 0 8px 20px -8px rgba(212, 160, 23, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .matches-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: var(--gradient-accent);
+        }
+
+        .matches-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--accent-light);
+        }
+
+        .matches-header i {
+            font-size: 24px;
+            color: var(--accent);
+            background: rgba(212, 160, 23, 0.1);
+            padding: 10px;
+            border-radius: 14px;
+        }
+
+        .matches-header h3 {
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .matches-header span {
+            margin-left: auto;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px -4px var(--primary);
+        }
+
+        .matches-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .match-card {
+            background: white;
+            border-radius: 20px;
+            padding: 18px 12px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 16px -8px rgba(26, 54, 93, 0.15);
+            border: 1px solid var(--gray-light);
+            transition: all 0.3s ease;
+        }
+
+        .match-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 15px 30px -10px var(--accent);
+        }
+
+        .match-rank {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px -4px var(--primary);
+        }
+
+        .match-rank.gold {
+            background: linear-gradient(135deg, #D4A017, #E6C362);
+            color: var(--primary);
+        }
+
+        .match-rank.silver {
+            background: linear-gradient(135deg, #A0AEC0, #CBD5E0);
+            color: var(--primary);
+        }
+
+        .match-rank.bronze {
+            background: linear-gradient(135deg, #C05621, #DD6B20);
+            color: white;
+        }
+
+        .match-icon {
+            width: 60px;
+            height: 60px;
+            margin: 5px auto 10px;
+            background: rgba(212, 160, 23, 0.1);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .match-icon i {
+            font-size: 30px;
+            color: var(--accent);
+        }
+
+        .match-name {
+            color: var(--primary);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 0.3px;
+        }
+
+        .match-percentage {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        .match-percentage small {
+            font-size: 12px;
+            color: var(--gray);
+            font-weight: 400;
+        }
+
+        .match-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--gray-light);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .match-bar-fill {
+            height: 100%;
+            background: var(--gradient-accent);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .match-label {
+            font-size: 11px;
+            color: var(--gray);
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        /* Risk Level */
+        .risk-section {
+            background: var(--bg-light);
+            padding: 20px;
+            border-radius: 28px;
+            margin: 20px 0;
+            border: 1px solid var(--gray-light);
+        }
+
+        .risk-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .risk-header i {
+            color: var(--accent);
+            font-size: 22px;
+        }
+
+        .risk-header span {
+            color: var(--gray-dark);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .risk-badge-large {
+            display: inline-block;
+            padding: 14px 30px;
+            border-radius: 50px;
+            color: white;
+            font-weight: 700;
+            font-size: 22px;
+            background: {% if risk == 'LOW' %}#10B981{% elif risk == 'MEDIUM' %}#F59E0B{% elif risk == 'HIGH' %}#EF4444{% else %}#7F1D1D{% endif %};
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Analysis */
+        .analysis-section {
+            background: var(--bg-light);
+            padding: 20px;
+            border-radius: 28px;
+            margin: 20px 0;
+            border: 1px solid var(--gray-light);
+            border-left: 4px solid var(--accent);
+        }
+
+        .analysis-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .analysis-header i {
+            color: var(--accent);
+            font-size: 22px;
+        }
+
+        .analysis-header span {
+            color: var(--primary);
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .analysis-text {
+            color: var(--gray-dark);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .ml-tag {
+            background: white;
+            padding: 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            border: 1px dashed var(--accent-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ml-tag i {
+            color: var(--accent);
+            font-size: 18px;
+        }
+
+        /* Source Info */
+        .source-info {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            font-size: 13px;
+            color: var(--gray);
+            padding: 12px;
+            background: var(--bg-light);
+            border-radius: 20px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .source-info i {
+            color: var(--accent);
+            margin-right: 5px;
+        }
+
+        /* Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 25px 0 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -8px var(--primary);
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 2px solid var(--primary-light);
+            color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--gray-light);
+            color: var(--gray-dark);
+        }
+
+        .btn-outline:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--gray);
+            font-size: 12px;
+            padding-top: 15px;
+            border-top: 1px solid var(--gray-light);
+        }
+
+        footer i {
+            color: var(--accent);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .matches-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-circle-1"></div>
+    <div class="bg-circle-2"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="badge">
+                <i class="fas fa-microchip"></i>
+                ML RESULT
+            </div>
+            <div class="icon">
+                <i class="fas {% if risk == 'LOW' %}fa-check-circle{% elif risk == 'MEDIUM' %}fa-exclamation-circle{% else %}fa-exclamation-triangle{% endif %}"></i>
+            </div>
+            <h2>{% if attack_name == 'NORMAL' %}Normal Traffic{% else %}Intrusion Detected{% endif %}</h2>
+            <div class="time">
+                <i class="far fa-clock"></i>
+                {{ current_time.split(' ')[1] if current_time else '13:33:17' }}
+            </div>
+        </div>
+
+        <!-- Confidence Meter -->
+        <div class="confidence-meter">
+            <div class="meter-header">
+                <span><i class="fas fa-chart-line"></i> ML Confidence</span>
+                <span>{{ confidence }}%</span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-fill"></div>
+            </div>
+        </div>
+
+        <!-- Info Cards -->
+        <div class="info-grid">
+            <div class="info-card">
+                <i class="fas fa-bug"></i>
+                <div class="info-label">Attack</div>
+                <div class="info-value">{{ attack_name }}</div>
+            </div>
+            <div class="info-card">
+                <i class="fas fa-tag"></i>
+                <div class="info-label">Category</div>
+                <div class="info-value">{{ category }}</div>
+            </div>
+            <div class="info-card">
+                <i class="fas fa-code"></i>
+                <div class="info-label">Code</div>
+                <div class="info-value">{{ attack_code }}</div>
+            </div>
+            <div class="info-card">
+                <i class="fas fa-ruler"></i>
+                <div class="info-label">Distance</div>
+                <div class="info-value">{{ distance }}</div>
+            </div>
+        </div>
+
+        <!-- ===== TOP MATCHING ATTACKS SECTION - BLUE & GOLD THEME ===== -->
+        <div class="matches-section">
+            <div class="matches-header">
+                <i class="fas fa-chart-line"></i>
+                <h3>Top Matching Attacks</h3>
+                <span>ML ANALYTICS</span>
+            </div>
+            
+            <div class="matches-grid">
+                {% for match, similarity in top_matches %}
+                <div class="match-card">
+                    <div class="match-rank {% if loop.index == 1 %}gold{% elif loop.index == 2 %}silver{% elif loop.index == 3 %}bronze{% endif %}">
+                        {{ loop.index }}
+                    </div>
+                    <div class="match-icon">
+                        {% if loop.index == 1 %}
+                            <i class="fas fa-crown"></i>
+                        {% elif 'SWEEP' in match or 'PORT' in match %}
+                            <i class="fas fa-search"></i>
+                        {% elif 'SATAN' in match %}
+                            <i class="fas fa-skull"></i>
+                        {% elif 'ROOT' in match or 'KIT' in match %}
+                            <i class="fas fa-terminal"></i>
+                        {% elif 'NEPTUNE' in match %}
+                            <i class="fas fa-water"></i>
+                        {% elif 'NORMAL' in match %}
+                            <i class="fas fa-check-circle"></i>
+                        {% else %}
+                            <i class="fas fa-bug"></i>
+                        {% endif %}
+                    </div>
+                    <div class="match-name">{{ match }}</div>
+                    <div class="match-percentage">{{ similarity }}<small>%</small></div>
+                    <div class="match-bar">
+                        <div class="match-bar-fill" style="width: {{ similarity }}%"></div>
+                    </div>
+                    <div class="match-label">Match Confidence</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Risk Level -->
+        <div class="risk-section">
+            <div class="risk-header">
+                <i class="fas fa-shield-alt"></i>
+                <span>Risk Level</span>
+            </div>
+            <div class="risk-badge-large">{{ risk }}</div>
+        </div>
+
+        <!-- Analysis -->
+        <div class="analysis-section">
+            <div class="analysis-header">
+                <i class="fas fa-info-circle"></i>
+                <span>Analysis</span>
+            </div>
+            <div class="analysis-text">{{ explanation[:120] }}...</div>
+            <div class="ml-tag">
+                <i class="fas fa-brain"></i>
+                <span><strong>ML Decision:</strong> {{ confidence }}% confidence | Similarity: {{ similarity }}%</span>
+            </div>
+        </div>
+
+        <!-- Source Info -->
+        <div class="source-info">
+            <span><i class="fas fa-network-wired"></i> Source: {{ source_ip }}</span>
+            <span><i class="fas fa-plug"></i> Port: {{ destination_port }}</span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="/" class="btn btn-secondary">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="/dashboard" class="btn btn-primary">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a>
+            <a href="/result" class="btn btn-outline">
+                <i class="fas fa-sync-alt"></i> New
+            </a>
+        </div>
+
+        <footer>
+            <i class="fas fa-microchip"></i> DICS - Distance-based Intrusion Classification
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DICS - Intrusion Detection System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1A365D;
+            --primary-dark: #0F1F3D;
+            --primary-light: #2D4A7C;
+            --accent: #D4A017;
+            --accent-light: #E6C362;
+            --accent-dark: #B8860B;
+            --gray-dark: #4A5568;
+            --gray: #718096;
+            --gray-light: #E2E8F0;
+            --bg-sky: #E6F3FF;  /* Light Sky Blue Background */
+            --card-bg: #FFFFFF;
+            --gradient-primary: linear-gradient(135deg, var(--primary) 0%, #2C5282 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+            background: var(--bg-sky);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bg-circle-1 {
+            position: absolute;
+            top: -200px;
+            right: -200px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(33, 150, 243, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .bg-circle-2 {
+            position: absolute;
+            bottom: -200px;
+            left: -200px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(33, 150, 243, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .card {
+            background: var(--card-bg);
+            max-width: 900px;
+            width: 100%;
+            padding: 30px 40px;
+            border-radius: 36px;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(226, 232, 240, 0.9);
+            position: relative;
+            z-index: 1;
+            animation: fadeIn 0.5s ease;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        .card::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .card::-webkit-scrollbar-track {
+            background: var(--bg-light);
+            border-radius: 10px;
+        }
+
+        .card::-webkit-scrollbar-thumb {
+            background: var(--accent-light);
+            border-radius: 10px;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--gradient-accent);
+            border-radius: 36px 36px 0 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 18px;
+            background: var(--bg-light);
+            color: var(--accent-dark);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border-radius: 30px;
+            margin-bottom: 15px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .badge i {
+            color: var(--accent);
+            font-size: 12px;
+        }
+
+        h1 {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+
+        .full-form {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+        }
+
+        .subtitle {
+            color: var(--gray-dark);
+            font-size: 13px;
+            max-width: 550px;
+            margin: 10px auto 0;
+            line-height: 1.5;
+            background: var(--bg-light);
+            padding: 8px 20px;
+            border-radius: 40px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .feature-card {
+            background: var(--bg-light);
+            padding: 20px 12px;
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid var(--gray-light);
+            transition: all 0.2s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-light);
+            background: white;
+        }
+
+        .feature-card i {
+            font-size: 32px;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .feature-card h3 {
+            color: var(--primary);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 25px 0;
+            padding: 25px 20px;
+            background: var(--gradient-primary);
+            border-radius: 28px;
+            color: white;
+            box-shadow: 0 15px 20px -8px rgba(26, 54, 93, 0.2);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #FFFFFF, var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            opacity: 0.95;
+            letter-spacing: 0.5px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0 15px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 8px 12px -4px rgba(26, 54, 93, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 16px -6px rgba(26, 54, 93, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 2px solid var(--primary-light);
+            color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn i {
+            font-size: 14px;
+        }
+
+        .footer-note {
+            margin-top: 20px;
+            padding: 12px 18px;
+            background: var(--bg-light);
+            border-radius: 20px;
+            color: var(--gray-dark);
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .footer-note i {
+            color: var(--accent);
+            font-size: 16px;
+            background: white;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+        }
+
+        .status-bar {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--gray);
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10B981;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @media (max-height: 700px) {
+            .card { padding: 20px 30px; }
+            h1 { font-size: 42px; }
+            .features-grid { margin: 15px 0; }
+            .stats-container { margin: 15px 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-circle-1"></div>
+    <div class="bg-circle-2"></div>
+
+    <div class="card">
+        <div class="header">
+            <div class="badge">
+                <i class="fas fa-shield-halos"></i>
+                IDS
+            </div>
+            <h1>DICS</h1>
+            <div class="full-form">
+                Distance-based Intrusion Classification System
+            </div>
+            <div class="subtitle">
+                ML-powered network security
+            </div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-bolt"></i>
+                <h3>Real-time</h3>
+                <p>Instant detection</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>95% Accuracy</h3>
+                <p>High precision</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-brain"></i>
+                <h3>ML Powered</h3>
+                <p>Distance-based</p>
+            </div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-value">40+</div>
+                <div class="stat-label">ATTACKS</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">24/7</div>
+                <div class="stat-label">MONITOR</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">99%</div>
+                <div class="stat-label">UPTIME</div>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <a href="/result" class="btn btn-primary">
+                <i class="fas fa-search"></i> DETECT
+            </a>
+            <a href="/dashboard" class="btn btn-secondary">
+                <i class="fas fa-chart-pie"></i> DASHBOARD
+            </a>
+        </div>
+
+        <div class="footer-note">
+            <i class="fas fa-microchip"></i>
+            <span><strong>ML Core:</strong> 40+ attack patterns</span>
+        </div>
+
+        <div class="status-bar">
+            <span class="status-dot"></span>
+            <span>System Active</span>
+        </div>
+    </div>
+</body>
+</html>
